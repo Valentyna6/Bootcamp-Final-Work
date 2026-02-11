@@ -26,4 +26,4 @@ jobs:
       - name: Run New Container
         run: |
           # Запускаем новый контейнер (например, на порту 80)
-          docker run -d --name my-app-container -p 80:80 my-app:latest
+          docker run -d --name my-app-container -p 8080:80 my-app:latest
