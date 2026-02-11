@@ -1,20 +1,29 @@
-name: EC2 Self-Hosted Test
+name: Deploy Application
 
 on:
   push:
-    branches: [ "main" ] # Убедитесь, что ваша ветка называется main, а не master
+    branches: [ "main" ] # Срабатывает при пуше в main
 
 jobs:
-  check-ec2:
-    runs-on: [self-hosted, ec2] # Ваши метки раннера
+  build-and-deploy:
+    runs-on: [self-hosted, ec2]
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: System Info
+      - name: Build Docker Image
         run: |
-          echo "Билд запущен успешно!"
-          whoami
-          uptime
-          docker --version
+          # Собираем образ (замените my-app на название вашего проекта)
+          docker build -t my-app:latest .
+
+      - name: Stop Old Container
+        run: |
+          # Останавливаем старый контейнер, если он запущен, чтобы освободить порт
+          docker stop my-app-container || true
+          docker rm my-app-container || true
+
+      - name: Run New Container
+        run: |
+          # Запускаем новый контейнер (например, на порту 80)
+          docker run -d --name my-app-container -p 80:80 my-app:latest
